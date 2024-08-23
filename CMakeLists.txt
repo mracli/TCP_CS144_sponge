@@ -1,6 +1,9 @@
-cmake_minimum_required (VERSION 2.8.5)
+cmake_minimum_required (VERSION 3.12)
 cmake_policy (SET CMP0054 NEW)
 project (Sponge)
+
+# set(CMAKE_CXX_STANDARD 17)
+# set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include (etc/build_defs.cmake)
 include (etc/build_type.cmake)
@@ -8,7 +11,7 @@ include (etc/cflags.cmake)
 
 include (etc/doxygen.cmake)
 
-include (etc/clang_format.cmake)
+include (etc/clang_format.cmake)        
 include (etc/clang_tidy.cmake)
 include (etc/cppcheck.cmake)
 
