@@ -1,4 +1,5 @@
 #include "wrapping_integers.hh"
+#include <cstdint>
 
 // Dummy implementation of a 32-bit wrapping integer
 
@@ -14,8 +15,7 @@ using namespace std;
 //! \param n The input absolute 64-bit sequence number
 //! \param isn The initial sequence number
 WrappingInt32 wrap(uint64_t n, WrappingInt32 isn) {
-    DUMMY_CODE(n, isn);
-    return WrappingInt32{0};
+    return WrappingInt32{static_cast<uint32_t>(n) + isn.raw_value()};
 }
 
 //! Transform a WrappingInt32 into an "absolute" 64-bit sequence number (zero-indexed)
@@ -30,5 +30,14 @@ WrappingInt32 wrap(uint64_t n, WrappingInt32 isn) {
 //! has a different ISN.
 uint64_t unwrap(WrappingInt32 n, WrappingInt32 isn, uint64_t checkpoint) {
     DUMMY_CODE(n, isn, checkpoint);
-    return {};
+    auto diff = n - isn - static_cast<uint32_t>(checkpoint);
+    uint64_t result;
+    if(diff < (1u << 31)){
+        result = checkpoint + diff;
+    }else{
+        result = checkpoint - ((1ul << 32) - diff);
+        if(result > checkpoint)
+            result = checkpoint + diff;
+    }
+    return result;
 }

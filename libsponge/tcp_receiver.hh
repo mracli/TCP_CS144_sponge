@@ -6,6 +6,7 @@
 #include "tcp_segment.hh"
 #include "wrapping_integers.hh"
 
+#include <cstdint>
 #include <optional>
 
 //! \brief The "receiver" part of a TCP implementation.
@@ -19,6 +20,12 @@ class TCPReceiver {
 
     //! The maximum number of bytes we'll store.
     size_t _capacity;
+    std::optional<WrappingInt32> _isn = std::nullopt;
+
+  private:
+    bool has_error() const { return stream_out().error(); }
+
+    void set_error() { stream_out().set_error(); }
 
   public:
     //! \brief Construct a TCP receiver
