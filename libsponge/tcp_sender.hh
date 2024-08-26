@@ -4,9 +4,10 @@
 #include "byte_stream.hh"
 #include "tcp_config.hh"
 #include "tcp_segment.hh"
+#include "timer.hh"
 #include "wrapping_integers.hh"
 
-#include <functional>
+#include <cstdint>
 #include <queue>
 
 //! \brief The "sender" part of a TCP implementation.
@@ -23,6 +24,12 @@ class TCPSender {
     //! outbound queue of segments that the TCPSender wants sent
     std::queue<TCPSegment> _segments_out{};
 
+    //! TCPSender's segments that already in flight
+    std::queue<std::pair<uint64_t, TCPSegment>> _outstanding_buf{};
+
+    //! Data size still in the flight to the peer
+    unsigned int _bytes_in_flight{};
+
     //! retransmission timer for the connection
     unsigned int _initial_retransmission_timeout;
 
@@ -31,6 +38,18 @@ class TCPSender {
 
     //! the (absolute) sequence number for the next byte to be sent
     uint64_t _next_seqno{0};
+
+    //! the sending window size, we need to assume current net state is fine, 
+    // which means non-zero send window size
+    // zero window size must be received from the peer, not self initialized!
+    uint16_t _window_size{1};
+
+    //! the timer for deciding when to resend timeout segment 
+    Timer _timer;
+
+    //! sender's state.
+    bool _is_syn{};
+    bool _is_fin{};
 
   public:
     //! Initialize a TCPSender
