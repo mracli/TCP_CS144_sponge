@@ -1,12 +1,18 @@
 #ifndef SPONGE_LIBSPONGE_NETWORK_INTERFACE_HH
 #define SPONGE_LIBSPONGE_NETWORK_INTERFACE_HH
 
+#include "buffer.hh"
 #include "ethernet_frame.hh"
+#include "ethernet_header.hh"
+#include "ipv4_datagram.hh"
 #include "tcp_over_ip.hh"
 #include "tun.hh"
 
+#include <cstdint>
+#include <map>
 #include <optional>
 #include <queue>
+#include <list>
 
 //! \brief A "network interface" that connects IP (the internet layer, or network layer)
 //! with Ethernet (the network access layer, or link layer).
@@ -31,6 +37,12 @@
 //! and learns or replies as necessary.
 class NetworkInterface {
   private:
+
+    struct EthernetEntry{
+      uint32_t ttl;
+      EthernetAddress addr;
+    };
+
     //! Ethernet (known as hardware, network-access-layer, or link-layer) address of the interface
     EthernetAddress _ethernet_address;
 
@@ -40,7 +52,20 @@ class NetworkInterface {
     //! outbound queue of Ethernet frames that the NetworkInterface wants sent
     std::queue<EthernetFrame> _frames_out{};
 
+    std::map<uint32_t, EthernetEntry> _table{};
+
+    std::map<uint32_t, size_t> _waiting_arp_response_table{};
+
+    std::map<uint32_t, std::list<std::pair<InternetDatagram, uint32_t>>> _waiting_internet_dgrams_table{};
+
+  private:
+    void _send_frame(const EthernetAddress &dst, const uint16_t type, BufferList &&payload);
+
   public:
+    static constexpr uint32_t ARP_RESP_TTL_MS = 5 * 1000;
+
+    static constexpr uint32_t ARP_TTL_MS = 30 * 1000;
+
     //! \brief Construct a network interface with given Ethernet (network-access-layer) and IP (internet-layer) addresses
     NetworkInterface(const EthernetAddress &ethernet_address, const Address &ip_address);
 

@@ -1,5 +1,6 @@
 #include "address.hh"
 #include "socket.hh"
+#include "tcp_sponge_socket.hh"
 #include "util.hh"
 
 #include <cstdlib>
@@ -22,7 +23,7 @@ void get_URL(const string &host, const string &path) {
     // cerr << "Function called: get_URL(" << host << ", " << path << ").\n";
     // cerr << "Warning: get_URL() has not been implemented yet.\n";
 
-    TCPSocket sock;
+    FullStackSocket sock;
     Address addr(host, "http");
     sock.connect(addr);
     sock.write("GET " + path + " HTTP/1.1\r\n");
