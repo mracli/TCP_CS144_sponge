@@ -21,6 +21,16 @@ class TCPConnection {
     //! in case the remote TCPConnection doesn't know we've received its whole stream?
     bool _linger_after_streams_finish{true};
 
+    size_t _time_since_last_segment_received{};
+
+    bool _active{true};
+
+  private:
+    //! \brief Every time send outbound seg, try to make up ACK part if possible
+    void _send_with_ack_if_possible();
+
+    void _set_rst_state();
+
   public:
     //! \name "Input" interface for the writer
     //!@{
