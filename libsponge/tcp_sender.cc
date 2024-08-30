@@ -79,7 +79,7 @@ void TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
     bool success = false;
 
     while(!_outstanding_buf.empty()){
-        const auto [seg_no, front_seg] = _outstanding_buf.front();
+        const auto &[seg_no, front_seg] = _outstanding_buf.front();
         if(seg_no + front_seg.length_in_sequence_space() > recved_ack_no)
             break;
         // if success
