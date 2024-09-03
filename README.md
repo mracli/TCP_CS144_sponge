@@ -1,73 +1,34 @@
-For build prereqs, see [the CS144 VM setup instructions](https://web.stanford.edu/class/cs144/vm_howto).
+## 项目准备
 
-## Sponge quickstart
+可以参考 [CS144 VM 配置指南](https://web.stanford.edu/class/cs144/vm_howto)
 
-To set up your build directory:
+较为简单的方式是租云服务器，Ubuntu 22.04 LTS 版本下的GCC编译器(11.4)就可跑起来该项目，然后采用vscode + cmake + remote ssh 的方式编码。
 
-	$ mkdir -p <path/to/sponge>/build
-	$ cd <path/to/sponge>/build
-	$ cmake ..
+项目环境：
+- gcc 11.4
+- lsp clangd 18.1.8(不用太新，14的版本够用)
 
-**Note:** all further commands listed below should be run from the `build` dir.
+## 构建项目
 
-To build:
+```shell
+cd <project-path>
+cmake -B build
+cmake --build build --target all -j4
+```
 
-    $ make
+## 测试
 
-You can use the `-j` switch to build in parallel, e.g.,
+```shell
+cd ./build
+make check_lab<序号>
+```
 
-    $ make -j$(nproc)
+## 使用课程提供的tcp_benchmark
 
-To test (after building; make sure you've got the [build prereqs](https://web.stanford.edu/class/cs144/vm_howto) installed!)
+```shell
+./app/tcp_benchmark
+```
 
-    $ make check_labN *(replacing N with a checkpoint number)*
+我这里在Release变量下构建可执行文件的结果：
 
-The first time you run `make check_lab...`, it will run `sudo` to configure two
-[TUN](https://www.kernel.org/doc/Documentation/networking/tuntap.txt) devices for use during
-testing.
-
-### build options
-
-You can specify a different compiler when you run cmake:
-
-    $ CC=clang CXX=clang++ cmake ..
-
-You can also specify `CLANG_TIDY=` or `CLANG_FORMAT=` (see "other useful targets", below).
-
-Sponge's build system supports several different build targets. By default, cmake chooses the `Release`
-target, which enables the usual optimizations. The `Debug` target enables debugging and reduces the
-level of optimization. To choose the `Debug` target:
-
-    $ cmake .. -DCMAKE_BUILD_TYPE=Debug
-
-The following targets are supported:
-
-- `Release` - optimizations
-- `Debug` - debug symbols and `-Og`
-- `RelASan` - release build with [ASan](https://en.wikipedia.org/wiki/AddressSanitizer) and
-  [UBSan](https://developers.redhat.com/blog/2014/10/16/gcc-undefined-behavior-sanitizer-ubsan/)
-- `RelTSan` - release build with
-  [ThreadSan](https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Thread_Sanitizer)
-- `DebugASan` - debug build with ASan and UBSan
-- `DebugTSan` - debug build with ThreadSan
-
-Of course, you can combine all of the above, e.g.,
-
-    $ CLANG_TIDY=clang-tidy-6.0 CXX=clang++-6.0 .. -DCMAKE_BUILD_TYPE=Debug
-
-**Note:** if you want to change `CC`, `CXX`, `CLANG_TIDY`, or `CLANG_FORMAT`, you need to remove
-`build/CMakeCache.txt` and re-run cmake. (This isn't necessary for `CMAKE_BUILD_TYPE`.)
-
-### other useful targets
-
-To generate documentation (you'll need `doxygen`; output will be in `build/doc/`):
-
-    $ make doc
-
-To format (you'll need `clang-format`):
-
-    $ make format
-
-To see all available targets,
-
-    $ make help
+![](img/speed_benchmark.png)
