@@ -1,0 +1,41 @@
+{
+    "cmake.setBuildTypeOnMultiConfig": true,
+    "cmake.defaultVariants": {
+        "buildType": {
+            "default": "debug",
+            "description": "生成类型。",
+            "choices": {
+                "debug": {
+                    "short": "Debug",
+                    "long": "禁用优化 - 包括调试信息。",
+                    "buildType": "Debug"
+                },
+                "release": {
+                    "short": "Release",
+                    "long": "进行优化，提高速度 - 排除调试信息。",
+                    "buildType": "Release"
+                },
+                "minsize": {
+                    "short": "MinSizeRel",
+                    "long": "优化最小二进制大小 - 排除调试信息。",
+                    "buildType": "MinSizeRel"
+                },
+                "reldeb": {
+                    "short": "RelWithDebInfo",
+                    "long": "进行优化，提高速度 - 包括调试信息。",
+                    "buildType": "RelWithDebInfo"
+                },
+                "DebugASan": {
+                    "short": "DebugASan",
+                    "long": "禁用优化, 增加未定义检测的 Sanitizers ",
+                    "buildType": "DebugASan"
+                },
+                "unspecified": {
+                    "short": "Unspecified",
+                    "long": "让 CMake 选择默认生成类型。",
+                    "buildType": "Unspecified"
+                },
+            }
+        }
+    }
+}
